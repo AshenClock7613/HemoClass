@@ -1,30 +1,48 @@
-%generazione matrice randomica
+%Generazione matrice randomica
 A = randi([1, 10], 5, 5);
 [Qmatlab, Rmatlab] = qr(A);
 
+%Inizializzazione di R e determinazione delle dimensioni
 R = A;
 [m, n] = size(A);
 c = min(m, n);
+%Memorizzo tutte le matrici di householder all'interno di un array
 H = cell(1, c);
 
+%Applicazione della fattorizzazione QR
 for k = 1:c
-    x = R(k:m, k); %corrisponde ad a_1
-    e = [1; zeros(length(x)-1, 1)]; %vettore nullo eccetto prima componente
-    vk = sign(x(1)) * sqrt(sum(x.^2)) * e + x;
+    x = R(k:m, k); %Corrisponde ad a_k
+    e = [1; zeros(length(x)-1, 1)]; %Vettore nullo eccetto prima componente
+    sigma = norm(x); %Calcolo della norma 2 di x
+    %sign(x(1)) per ottimizzare il risultato
+    vk = sign(x(1)) * sqrt(sigma * (sigma + abs(x(1)))) * e + x;
 
-    %calcolo H_k
+    %Calcolo della matrice di householder H_k
+    %hk = eye(length(x)) - 2 * (vk * vk') / (sigma * (sigma + abs(x(1))));
     hk = eye(length(x)) - 2 * (vk * vk') / (vk' * vk);
     if k > 1
         hk = blkdiag(eye(k-1), hk);
     end
 
     H{k} = hk;
+    %Annullo gli elementi sotto la diagonale della colonna k di R
     R = hk * R;
 end
 
-%inizializzo Q con la prima matrice H
+%Inizializzazione di Q con la prima matrice H
 Q = H{1};
 for i = 2:c
-    %calcolo Q moltiplicando riga per colonna tutte le H
+    %Calcolo Q moltiplicando riga per colonna tutte le H
     Q = H{i} * Q;
 end
+
+%Troncamento delle matrici Q e R del 80%
+perc_troncamento = 0.2;
+num_col_troncate = round(size(Q, 2) * perc_troncamento);
+num_row_troncate = round(size(R, 1) * perc_troncamento);
+
+Q_troncata = Q(:, 1:num_col_troncate);
+R_troncata = R(1:num_row_troncate, :);
+
+%Ricostruzione dell'immagine compressa
+immagine_compressa = Q_troncata * R_troncata;
