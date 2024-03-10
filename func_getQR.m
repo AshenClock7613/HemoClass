@@ -32,8 +32,6 @@ for i = 2:c
     % Calcolo Q moltiplicando riga per colonna tutte le H
     Q = H{i} * Q;
 end
-disp(size(A));
-disp(size(Q));
-disp(size(R));
+Q = Q';
 end
 
