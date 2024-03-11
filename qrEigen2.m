@@ -1,26 +1,24 @@
-function A_k = qrEigen2(A)
-    % Ottieni dimensioni della matrice
+function A_k = qrEigen2(A, k)
     [m, n] = size(A);
-    
-    % Calcola la fattorizzazione QR di A
-    [Q, R] = qr(A);
-    
-    % Risolvi il sistema Rx = Q^T * b per ottenere V
-    V = Q' * eye(m, n);
-    
-    % Calcola la SVD di R
-    [U_R, S, V_R] = svd(R);
-    
-    % Calcola U
-    U = Q * U_R;
-    
-    % Ordina gli elementi singolari in modo decrescente
-    [S, idx] = sort(diag(S), 'descend');
-    
-    % Riordina le colonne di U e V
-    U = U(:, idx);
-    V = V(:, idx);
-    
-    % Costruisci la matrice singolare S
-    A_k = U * diag(S) * V';
+
+    R1 = A;
+    U = eye(m);
+    V = eye(n);
+
+    for i = 1 : k
+        [Q1, R1] = qr(R1);
+        [Q2, R2] = qr(R1');
+        R1 = R2';
+
+        if m <= n
+            U = U * Q1;
+            V = V * Q2;
+        else
+            U = Q1 * U;
+            V = Q2 * V;
+        end
+    end
+
+    S = R1;
+    A_k = U * S * V';
 end
