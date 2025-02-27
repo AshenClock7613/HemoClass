@@ -56,5 +56,5 @@ To run the classification tasks:
 This project is distributed under the license found in the **LICENSE** file.
 
 ---
-For more details, refer to the **Classificazione_Immagini_Sangue.pdf** file.
+For more details, refer to the [Classificazione_Immagini_Sangue.pdf](Classificazione_Immagini_Sangue.pdf) file.
 
